@@ -1,10 +1,19 @@
 package main
 
 import (
-	"github.com/gogf/gf/frame/g"
+	"io/ioutil"
+	"log"
+	"tools/app/service/strService"
 	_ "tools/routes"
 )
 
 func main()  {
-	g.Server().Run()
+	//g.Server().Run()
+
+	bytes, err := ioutil.ReadFile("test.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	strService.DoGenModel(string(bytes[:]))
 }

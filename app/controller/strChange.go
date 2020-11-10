@@ -4,8 +4,8 @@ import (
 	"github.com/gogf/gf/encoding/gjson"
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/net/ghttp"
+	"io/ioutil"
 	"log"
-	"os"
 	"tools/app/service/strService"
 )
 
@@ -49,13 +49,11 @@ func JsonToStruct(r *ghttp.Request)  {
 }
 
 func SqlToStruct(r *ghttp.Request) {
-	file ,err := os.Open("test.txt")
+	bytes, err := ioutil.ReadFile("test.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
-	var schema []byte
-	file.Read(schema)
 
-	strService.DoGenModel(string(schema[:]))
+
+	strService.DoGenModel(string(bytes[:]))
 }
