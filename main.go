@@ -1,19 +1,17 @@
 package main
 
 import (
-	"io/ioutil"
-	"log"
-	"tools/app/service/strService"
+	"tools/app/console"
+	_ "tools/bootstrap"
 	_ "tools/routes"
 )
 
-func main()  {
-	//g.Server().Run()
-
-	bytes, err := ioutil.ReadFile("test.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	strService.DoGenModel(string(bytes[:]))
+func main() {
+	console.InitConsole()
+	//bytes, err := ioutil.ReadFile("test.txt")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//
+	//strService.DoGenModel(string(bytes[:]))
 }

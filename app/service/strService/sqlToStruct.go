@@ -5,6 +5,7 @@ import (
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 	"github.com/gogf/gf/text/gstr"
 	"log"
+	"strings"
 )
 
 var sqlTypeMap = map[string]string{
@@ -45,27 +46,32 @@ var sqlTypeMap = map[string]string{
 	"varbinary":          "string",
 }
 
-func DoGenModel(schema string) (structStr string) {
+// 生成结构体
+func DoGenModel(schema string) string {
 	stmt, err := sqlparser.Parse(schema)
 	if err != nil  {
 		log.Fatal(err)
 	}
 
-	structStr += fmt.Sprintf("type Test struct {\n")
+	var structStr strings.Builder
+	statement := stmt.(*sqlparser.CreateTable)
+	modelName := gstr.CamelCase(statement.NewName.Name.String())
+	structStr.WriteString(fmt.Sprintf("type %s struct {\n", modelName))
 
-
-	for _, column := range stmt.(*sqlparser.CreateTable).Columns {
-
-		structStr += fmt.Sprintf("	%s	%s	`gorm:\"%s\" `json:\"%s\"` \n",
+	for _, column := range statement.Columns {
+		structStr.WriteString(fmt.Sprintf("	%s	%s	`gorm:\"column:%s;%s\" json:\"%s\"` \n",
 			gstr.CamelCase(column.Name),
 			matchFieldType(column.Type),
 			column.Name,
-			column.Name)
+			matchOption(column.Options),
+			column.Name))
 	}
+	structStr.WriteString("}")
 
-	structStr += "}"
-fmt.Println(structStr)
-	return
+	structStr.WriteString(fmt.Sprintf("\n\nfunc (*%s) TableName() string {\n	return \"%s\" \n}",
+		modelName, statement.NewName.Name))
+
+	return structStr.String()
 }
 
 // 匹配字段类型
@@ -86,4 +92,25 @@ func matchFieldType(fieldType string) string {
 	})
 
 	return sqlTypeMap[fieldType]
+}
+
+// 匹配字段配置
+func matchOption(options []*sqlparser.ColumnOption) string {
+	var resStr strings.Builder
+	for _, option := range options {
+		switch option.Type {
+		case sqlparser.ColumnOptionNotNull:
+			resStr.WriteString("NOT NULL;")
+		case sqlparser.ColumnOptionComment:
+			break
+		case sqlparser.ColumnOptionDefaultValue:
+			break
+			//resStr.WriteString("default:"+fmt.Sprintf("%s", option.Value)+";")
+
+		default:
+			resStr.WriteString(option.Type.String()+";")
+		}
+
+	}
+	return resStr.String()
 }
