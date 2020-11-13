@@ -1,35 +1,25 @@
 package strService
 
 import (
-	"fmt"
-	"github.com/gogf/gf/encoding/gjson"
-	"github.com/gogf/gf/text/gstr"
+	"errors"
+	"github.com/ChimeraCoder/gojson"
+	"strings"
 )
 
-func JsonToStruct(jsonStr string) (structStr string, err error)  {
-	json, err := gjson.DecodeToJson(jsonStr)
+// JSON 数据生成结构体
+func JsonToStruct(jsonStr string, structName string, pkgName string) (string, error) {
+	// 结构需要生成的 tag
+	tags := make([]string, 0)
+	tags = append(tags, "json")
+
+	structBytes, err := gojson.Generate(strings.NewReader(jsonStr),
+		gojson.ParseJson,
+		structName,
+		pkgName,
+		tags, true, true)
 	if err != nil {
-		return "", err
+		return "", errors.New("JSON 格式错误")
 	}
-	structStr += fmt.Sprintf("type Test struct {\n")
 
-	structStr += parseField(json.ToMap())
-
-	structStr += "}"
-	return structStr, nil
-}
-
-func parseField(json map[string]interface{}) (structStr string)  {
-	for key, value := range json {
-		varType := fmt.Sprintf("%T", value)
-		if varType == "<nil>" {
-			varType = "interface{}"
-		}
-		structStr += fmt.Sprintf("	%s	%s	%s\n",
-			gstr.CamelCase(key),
-			varType,
-			fmt.Sprintf("`json:\"%s\"`", key))
-	}
-	
-	return structStr
+	return string(structBytes), nil
 }

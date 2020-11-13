@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"tools/app/service/strService"
+	"tools/app/support/h"
 )
 
 // json 字符串美化
@@ -15,34 +16,25 @@ func FormatJson(r *ghttp.Request) {
 
 	json, err := gjson.DecodeToJson(str)
 	if err != nil {
-		r.Response.WriteJsonExit(g.Map{
-			"code": 400,
-			"message": "json格式错误【"+err.Error()+"】",
-		})
+		h.Failed(r, "json格式错误【"+err.Error()+"】")
 	}
 
 	jsonStr, err := json.ToJsonIndentString()
 	if err != nil {
-		r.Response.WriteJsonExit(g.Map{
-			"code": 400,
-			"message": "json格式错误",
-		})
+		h.Failed(r, "json格式错误")
 	}
 
 	r.Response.WriteJsonExit(jsonStr)
 }
 
 // json 字符串转结构体
-func JsonToStruct(r *ghttp.Request)  {
-	str := r.Get("json")
+func JsonToStruct(r *ghttp.Request) {
 
-	structStr, err := strService.JsonToStruct(str.(string))
+	structStr, err := strService.JsonToStruct(r.GetString("json"),
+		r.GetString("structName", "Test"),
+		r.GetString("pkgName", "test"))
 	if err != nil {
-		r.Response.Header().Set("status", "400")
-		r.Response.WriteJsonExit(g.Map{
-			"code": 400,
-			"message": err.Error(),
-		})
+		h.Failed(r, err.Error())
 	}
 
 	r.Response.Write(structStr)
@@ -53,7 +45,6 @@ func SqlToStruct(r *ghttp.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 
 	strService.DoGenModel(string(bytes[:]))
 }
