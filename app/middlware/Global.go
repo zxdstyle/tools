@@ -6,6 +6,9 @@ import (
 	"net/http"
 )
 
+// 全局中间件
+
+// 错误捕捉中间件
 func MiddlewareError(r *ghttp.Request) {
 	r.Middleware.Next()
 
@@ -17,4 +20,10 @@ func MiddlewareError(r *ghttp.Request) {
 			"message": "未找到该路由",
 		})
 	}
+}
+
+// 跨域中间件
+func MiddlewareCORS(r *ghttp.Request) {
+	r.Response.CORSDefault()
+	r.Middleware.Next()
 }

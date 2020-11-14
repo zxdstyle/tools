@@ -1,8 +1,8 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gogf/gf/encoding/gjson"
-	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/net/ghttp"
 	"io/ioutil"
 	"log"
@@ -30,13 +30,13 @@ func FormatJson(r *ghttp.Request) {
 // json 字符串转结构体
 func JsonToStruct(r *ghttp.Request) {
 
-	structStr, err := strService.JsonToStruct(r.GetString("json"),
-		r.GetString("structName", "Test"),
+	structStr, err := strService.JsonToStruct(r.GetString("jsonStr"),
+		r.GetString("modelName", "Test"),
 		r.GetString("pkgName", "test"))
 	if err != nil {
 		h.Failed(r, err.Error())
 	}
-
+	fmt.Println(r.GetString("modelName", "Test"))
 	r.Response.Write(structStr)
 }
 

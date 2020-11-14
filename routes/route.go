@@ -10,7 +10,7 @@ import (
 func init() {
 	app := g.Server()
 
-	app.Use(middlware.MiddlewareError)
+	app.Use(middlware.MiddlewareError, middlware.MiddlewareCORS)
 
 	app.BindHandler("/", func(r *ghttp.Request) {
 		r.Response.Write("Welcome!")
@@ -22,6 +22,8 @@ func init() {
 			json.POST("/struct", controller.JsonToStruct)
 			json.POST("/sql", controller.SqlToStruct)
 		})
+
+		group.GET("/today/one", controller.GetTodayOne)
 
 		group.REST("tools", &controller.ToolsController{})
 	})
