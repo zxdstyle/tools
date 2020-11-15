@@ -10,7 +10,7 @@ import (
 func init() {
 	app := g.Server()
 
-	app.Use(middlware.MiddlewareError, middlware.MiddlewareCORS)
+	app.Use(middlware.MiddlewareError, middlware.MiddlewareCORS, middlware.MiddlewareThrottle)
 
 	app.BindHandler("/", func(r *ghttp.Request) {
 		r.Response.Write("Welcome!")
