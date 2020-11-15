@@ -19,3 +19,13 @@ func Failed(r *ghttp.Request, message string, code ...interface{}) {
 		"message": message,
 	})
 }
+
+func Success(r *ghttp.Request, data ...interface{}) {
+	if len(data) > 0 {
+		r.Response.WriteJsonExit(data[0])
+	}
+	r.Response.WriteJsonExit(g.Map{
+		"code":    200,
+		"message": "success",
+	})
+}

@@ -24,6 +24,8 @@ func init() {
 		})
 
 		group.GET("/today/one", controller.GetTodayOne)
+		group.POST("/language", controller.Language)
+		group.GET("/language", controller.GetAllLang)
 
 		group.REST("tools", &controller.ToolsController{})
 	})

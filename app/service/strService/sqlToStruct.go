@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 	"github.com/gogf/gf/text/gstr"
-	"log"
 	"strings"
 )
 
@@ -47,10 +46,10 @@ var sqlTypeMap = map[string]string{
 }
 
 // 生成结构体
-func DoGenModel(schema string) string {
+func DoGenModel(schema string) (string, error) {
 	stmt, err := sqlparser.Parse(schema)
-	if err != nil  {
-		log.Fatal(err)
+	if err != nil {
+		return "", err
 	}
 
 	var structStr strings.Builder
@@ -71,7 +70,7 @@ func DoGenModel(schema string) string {
 	structStr.WriteString(fmt.Sprintf("\n\nfunc (*%s) TableName() string {\n	return \"%s\" \n}",
 		modelName, statement.NewName.Name))
 
-	return structStr.String()
+	return structStr.String(), nil
 }
 
 // 匹配字段类型
@@ -108,7 +107,7 @@ func matchOption(options []*sqlparser.ColumnOption) string {
 			//resStr.WriteString("default:"+fmt.Sprintf("%s", option.Value)+";")
 
 		default:
-			resStr.WriteString(option.Type.String()+";")
+			resStr.WriteString(option.Type.String() + ";")
 		}
 
 	}
