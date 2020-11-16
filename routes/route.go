@@ -17,6 +17,10 @@ func init() {
 	})
 
 	app.Group("/api", func(group *ghttp.RouterGroup) {
+		group.POST("/login", controller.Login)
+
+		group.Middleware(middlware.MiddlewareAuth)
+
 		group.Group("/json", func(json *ghttp.RouterGroup) {
 			json.POST("/format", controller.FormatJson)
 			json.POST("/struct", controller.JsonToStruct)
