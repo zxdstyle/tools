@@ -9,7 +9,7 @@ import (
 
 func init() {
 	db, err := gorm.Open(mysql.New(mysql.Config{
-		DSN: g.Cfg().Get("database.link").(string),
+		DSN: g.Cfg().GetString("database.link"),
 	}), &gorm.Config{})
 	if err != nil {
 		g.Log().Error("数据库连接错误：" + err.Error())

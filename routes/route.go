@@ -19,6 +19,8 @@ func init() {
 	app.Group("/api", func(group *ghttp.RouterGroup) {
 		group.POST("/login", controller.Login)
 
+		group.REST("roles", &controller.RoleController{})
+
 		group.Middleware(middlware.MiddlewareAuth)
 
 		group.Group("/json", func(json *ghttp.RouterGroup) {

@@ -33,6 +33,8 @@
 # Database.
 [database]
     link  = "root:123456@tcp(127.0.0.1:3306)/ginpp?charset=utf8mb4&parseTime=True&loc=Local"
+    database= "ginpp"
+    charset = "utf8b4"
     debug = true
 
 # Database logger.
