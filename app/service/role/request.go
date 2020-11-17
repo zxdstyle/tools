@@ -1,8 +1,10 @@
 package role
 
 import (
+	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/net/ghttp"
 	"github.com/gogf/gf/util/gvalid"
+	"tools/app/models"
 	"tools/app/support/h"
 )
 
@@ -19,9 +21,6 @@ type CreateRoleRequest struct {
 
 // 创建角色验证器
 func (role *CreateRoleRequest) ValidateCreateRole(r *ghttp.Request) {
-	if err := r.GetStruct(&role); err != nil {
-		h.Failed(r, err.Error(), 500)
-	}
 
 	// 状态默认值
 	if role.Status == 0 {
@@ -33,8 +32,24 @@ func (role *CreateRoleRequest) ValidateCreateRole(r *ghttp.Request) {
 	}
 }
 
-type UpdateRoleRequest struct {
-	Name   string `v:"name@unique:roles,name,"`
-	Slug   string `v:"slug@unique:roles,slug"`
-	Status int    `v:"status@in:1,2"`
+// 角色编辑
+func ValidateUpdateRole(r *ghttp.Request) {
+	rules := g.ArrayStr{
+		"role_id@required|min:0",
+		"status@in:1,2",
+	}
+
+	if err := gvalid.CheckMap(r.GetMap(), rules); err != nil {
+		h.Failed(r, err.Error())
+	}
+
+	var count int64
+	err := models.DB.Model(&models.Roles{}).Where("id", r.Get("role_id")).Count(&count).Error
+	if err != nil {
+		h.Failed(r, err.Error())
+	}
+
+	if count == 0 {
+		h.Failed(r, "未找到该角色")
+	}
 }

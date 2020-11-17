@@ -5,9 +5,20 @@ import (
 	"github.com/gogf/gf/net/ghttp"
 	"tools/app/models"
 	"tools/app/service/auth"
+	"tools/app/support/email"
 	"tools/app/support/h"
 )
 
+// 发送电子邮件
+func SendEmail(r *ghttp.Request) {
+	email.Send()
+}
+
+func Register(r *ghttp.Request) {
+
+}
+
+// 登录
 func Login(r *ghttp.Request) {
 	if err := auth.ValidateLoginRequest(r); err != "" {
 		h.Failed(r, err, 422)

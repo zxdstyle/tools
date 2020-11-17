@@ -8,7 +8,7 @@ import (
 	"tools/app/models"
 )
 
-// `v:"unique:tableName,fieldName,ignoreID,ignoreFieldName"`
+// `v:"unique:tableName,fieldName"`
 func init() {
 
 	const ruleName = "unique"
@@ -30,21 +30,6 @@ func init() {
 				return errors.New(fmt.Sprintf("%s 已被占用", fieldName))
 			}
 			return nil
-		}
-
-		if len(rules) >= 2 {
-			ignoreValue := rules[2]
-
-			var ignoreFieldName string = "id"
-			if len(rules) > 3 {
-				ignoreFieldName = rules[3]
-			}
-
-			models.DB.Table(tableName).Where(fieldName, value).
-				Where(fmt.Sprintf("%s <> ?", ignoreFieldName), ignoreValue).Count(&count)
-			if count > 0 {
-				return errors.New(fmt.Sprintf("%s 已被占用", fieldName))
-			}
 		}
 
 		return nil

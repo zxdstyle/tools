@@ -6,6 +6,7 @@ import (
 	"github.com/golang-module/carbon"
 	"gorm.io/gorm"
 	"tools/app/models"
+	"tools/app/support/h"
 )
 
 func filter(r *ghttp.Request) *gorm.DB {
@@ -69,4 +70,22 @@ func GetRoleList(r *ghttp.Request) *PaginatorResponse {
 	filter(r).Order("created_at DESC").Limit(paginator.PageSize).Offset(offset).Find(&paginator.Data)
 
 	return paginator
+}
+
+// 编辑角色
+func UpdateRole(r *ghttp.Request) {
+	err := models.DB.Model(&models.Roles{}).Where("id", r.Get("role_id")).
+		Select("name", "slug", "status").
+		Updates(r.GetMap()).Error
+	if err != nil {
+		h.Failed(r, err.Error())
+	}
+}
+
+// 删除角色
+func DeleteRole(r *ghttp.Request) {
+	err := models.DB.Where("id", r.Get("role_id")).Delete(&models.Roles{}).Error
+	if err != nil {
+		h.Failed(r, err.Error())
+	}
 }

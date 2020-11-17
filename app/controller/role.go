@@ -29,16 +29,16 @@ func GetRoleList(r *ghttp.Request) {
 
 // 角色编辑
 func UpdateRole(r *ghttp.Request) {
-	var request role.CreateRoleRequest
-	if err := r.GetFormStruct(&request); err != nil {
-		h.Failed(r, err.Error())
-	}
+	role.ValidateUpdateRole(r)
 
-	request.ValidateCreateRole(r)
+	role.UpdateRole(r)
 
-	if err := role.CreateRole(&request); err != nil {
-		h.Failed(r, err.Error(), 400)
-	}
+	h.Success(r)
+}
+
+// 删除角色
+func DeleteRole(r *ghttp.Request) {
+	role.DeleteRole(r)
 
 	h.Success(r)
 }
