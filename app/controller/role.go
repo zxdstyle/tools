@@ -6,11 +6,8 @@ import (
 	"tools/app/support/h"
 )
 
-type RoleController struct {
-}
-
 // 创建新角色
-func (*RoleController) Post(r *ghttp.Request) {
+func CreateRole(r *ghttp.Request) {
 	var request role.CreateRoleRequest
 	if err := r.GetFormStruct(&request); err != nil {
 		h.Failed(r, err.Error())
@@ -26,10 +23,22 @@ func (*RoleController) Post(r *ghttp.Request) {
 }
 
 // 获取角色列表
-func (*RoleController) Get(r *ghttp.Request) {
+func GetRoleList(r *ghttp.Request) {
 	h.Success(r, role.GetRoleList(r))
 }
 
-func (*RoleController) Put(r *ghttp.Request) {
+// 角色编辑
+func UpdateRole(r *ghttp.Request) {
+	var request role.CreateRoleRequest
+	if err := r.GetFormStruct(&request); err != nil {
+		h.Failed(r, err.Error())
+	}
 
+	request.ValidateCreateRole(r)
+
+	if err := role.CreateRole(&request); err != nil {
+		h.Failed(r, err.Error(), 400)
+	}
+
+	h.Success(r)
 }

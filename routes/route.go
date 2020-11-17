@@ -19,7 +19,13 @@ func init() {
 	app.Group("/api", func(group *ghttp.RouterGroup) {
 		group.POST("/login", controller.Login)
 
-		group.REST("roles", &controller.RoleController{})
+		/**************** 角色管理 ***************/
+		// 创建角色
+		group.POST("roles", controller.CreateRole)
+		// 角色列表
+		group.GET("roles", controller.GetRoleList)
+		// 角色编辑
+		group.PUT("roles/:role_id", controller.UpdateRole)
 
 		group.Middleware(middlware.MiddlewareAuth)
 

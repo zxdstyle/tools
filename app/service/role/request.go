@@ -32,3 +32,9 @@ func (role *CreateRoleRequest) ValidateCreateRole(r *ghttp.Request) {
 		h.Failed(r, err.FirstString(), 422)
 	}
 }
+
+type UpdateRoleRequest struct {
+	Name   string `v:"name@unique:roles,name,"`
+	Slug   string `v:"slug@unique:roles,slug"`
+	Status int    `v:"status@in:1,2"`
+}
