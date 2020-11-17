@@ -10,7 +10,7 @@ var MigrateCmd = &cobra.Command{
 	Use:   "migrate",
 	Short: "迁移数据库文件",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := models.DB.AutoMigrate(&models.Tools{})
+		err := models.DB.AutoMigrate(&models.Tools{}, &models.Roles{})
 		if err != nil {
 			g.Log().Error(err)
 		}

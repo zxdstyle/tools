@@ -1,19 +1,35 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gogf/gf/net/ghttp"
-	"tools/app/support/casbin"
+	"tools/app/service/role"
+	"tools/app/support/h"
 )
 
 type RoleController struct {
 }
 
+// 创建新角色
 func (*RoleController) Post(r *ghttp.Request) {
-	casbin.Enforcer.LoadPolicy()
+	var request role.CreateRoleRequest
+	if err := r.GetFormStruct(&request); err != nil {
+		h.Failed(r, err.Error())
+	}
 
-	ok, _ := casbin.Enforcer.Enforce(r.GetString("user"), r.GetString("permission"), r.GetString("method"))
-	fmt.Println(ok)
+	request.ValidateCreateRole(r)
 
-	casbin.Enforcer.AddPermissionForUser("user", "permission", "method")
+	if err := role.CreateRole(&request); err != nil {
+		h.Failed(r, err.Error(), 400)
+	}
+
+	h.Success(r)
+}
+
+// 获取角色列表
+func (*RoleController) Get(r *ghttp.Request) {
+	h.Success(r, role.GetRoleList(r))
+}
+
+func (*RoleController) Put(r *ghttp.Request) {
+
 }
