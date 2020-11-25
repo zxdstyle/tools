@@ -5,13 +5,12 @@ import (
 	"github.com/gogf/gf/net/ghttp"
 	"tools/app/models"
 	"tools/app/service/auth"
-	"tools/app/support/email"
 	"tools/app/support/h"
 )
 
 // 发送电子邮件
 func SendEmail(r *ghttp.Request) {
-	email.Send()
+
 }
 
 func Register(r *ghttp.Request) {
