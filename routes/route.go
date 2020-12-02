@@ -30,8 +30,6 @@ func init() {
 		group.DELETE("roles/:role_id", controller.DeleteRole)
 		/**************** 角色管理 end ***************/
 
-		group.Middleware(middlware.MiddlewareAuth)
-
 		group.Group("/json", func(json *ghttp.RouterGroup) {
 			json.POST("/format", controller.FormatJson)
 			json.POST("/struct", controller.JsonToStruct)
@@ -43,5 +41,8 @@ func init() {
 		group.GET("/language", controller.GetAllLang)
 
 		group.REST("tools", &controller.ToolsController{})
+
+		group.Middleware(middlware.MiddlewareAuth)
+
 	})
 }
