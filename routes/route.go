@@ -5,10 +5,13 @@ import (
 	"github.com/gogf/gf/net/ghttp"
 	"tools/app/controller"
 	"tools/app/middlware"
+	"tools/app/socket"
 )
 
 func init() {
 	app := g.Server()
+
+	app.BindObject("/ws", new(socket.WebSocketHandler))
 
 	app.Use(middlware.MiddlewareError, middlware.MiddlewareCORS, middlware.MiddlewareThrottle)
 
