@@ -6,7 +6,7 @@
     bottom: 20px;
     right: 35px;
     background: linear-gradient(to left, #8f94fb, #4e54c8);
-    /*box-shadow: 0 2px 30px 0 rgba(78, 84, 200, 0.8);*/
+    box-shadow: 0 2px 30px 0 rgba(78, 84, 200, 0.8);
     border-radius: 75px;
     color: #fff;
     display: -webkit-box;
@@ -156,9 +156,17 @@
     color: #0da9ef;
 }
 
-.pvr_chat_wrapper .pvr_chat_content .pvr-user-w .user-role {
+.pvr_chat_wrapper .pvr_chat_content .pvr-user-w .status {
     font-weight: 600;
     font-size: 0.81rem;
+}
+
+.pvr_chat_wrapper .pvr_chat_content .pvr-user-w .online {
+    color: #46c93A;
+}
+
+.pvr_chat_wrapper .pvr_chat_content .pvr-user-w .offline {
+    color: rgba(0, 0, 0, 0.4);
 }
 
 .pvr_chat_wrapper .pvr_chat_content .pvr-user-w .user-action {
