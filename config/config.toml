@@ -48,3 +48,9 @@
 
 [i18n]
     Default = "cn"
+
+[email]
+    Host = "smtp.qq.com"
+    Port = 465
+    Username = "cxytools@foxmail.com"
+    Password = "tnzvchsfxplticfa"
