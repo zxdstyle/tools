@@ -25,7 +25,7 @@ func (h *WebSocketHandler) dispatch() {
 		g.Log().Error(err)
 	}
 
-	message := h.parseMessage(msg)
+	_ = h.parseMessage(msg)
 }
 
 func (h *WebSocketHandler) parseMessage(msg []byte) (message *Message) {

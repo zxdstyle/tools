@@ -3,6 +3,7 @@ package h
 import (
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/net/ghttp"
+	"net"
 )
 
 // 定义一些全局辅助方法
@@ -28,4 +29,24 @@ func Success(r *ghttp.Request, data ...interface{}) {
 		"code":    200,
 		"message": "success",
 	})
+}
+
+// 获取服务器Ip
+func GetServerIp() (ip string) {
+	addrs, err := net.InterfaceAddrs()
+
+	if err != nil {
+		return ""
+	}
+
+	for _, address := range addrs {
+		// 检查ip地址判断是否回环地址
+		if ipNet, ok := address.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
+			if ipNet.IP.To4() != nil {
+				ip = ipNet.IP.String()
+			}
+		}
+	}
+
+	return
 }

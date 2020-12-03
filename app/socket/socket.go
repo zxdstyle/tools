@@ -1,24 +1,41 @@
 package socket
 
 import (
-	"github.com/gogf/gf/frame/g"
+	"fmt"
 	"github.com/gogf/gf/net/ghttp"
+	"github.com/gorilla/websocket"
+	"net/http"
+	"time"
+)
+
+var (
+	connectionManager = NewConnectionManager()
 )
 
 type WebSocketHandler struct {
 	ws *ghttp.WebSocket
 }
 
-func (h *WebSocketHandler) Handle(r *ghttp.Request) {
-	for {
-		ws, err := r.WebSocket()
-		if err != nil {
-			g.Log().Error(err)
-			return
-		}
+func Handle(w http.ResponseWriter, req *http.Request) {
+	// 升级协议
+	conn, err := (&websocket.Upgrader{CheckOrigin: func(r *http.Request) bool {
+		fmt.Println("升级协议", "ua:", r.Header["User-Agent"], "referer:", r.Header["Referer"])
+		return true
+	}}).Upgrade(w, req, nil)
+	if err != nil {
+		http.NotFound(w, req)
 
-		h.ws = ws
-
-		h.dispatch()
+		return
 	}
+
+	go connectionManager.Start()
+	fmt.Println("webSocket 建立连接:", conn.RemoteAddr().String())
+
+	client := NewClient(conn.RemoteAddr().String(), conn, uint64(time.Now().Unix()))
+
+	go client.Read()
+	go client.Write()
+
+	// 触发用户连接事件
+	connectionManager.Register <- client
 }

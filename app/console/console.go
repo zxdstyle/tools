@@ -16,6 +16,7 @@ func InitConsole() {
 
 	app.AddCommand(ServerCmd)
 	app.AddCommand(MigrateCmd)
+	app.AddCommand(SocketCmd)
 
 	if err := app.Execute(); err != nil {
 		log.Fatal(err)

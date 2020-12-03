@@ -12,6 +12,7 @@ require (
 	github.com/gogf/gf v1.14.2
 	github.com/golang-module/carbon v1.2.4
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+	github.com/gorilla/websocket v1.4.2
 	github.com/juju/ratelimit v1.0.1
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/spf13/cobra v1.1.1
