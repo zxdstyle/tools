@@ -8,10 +8,6 @@ import (
 	"time"
 )
 
-var (
-	connectionManager = NewConnectionManager()
-)
-
 type WebSocketHandler struct {
 	ws *ghttp.WebSocket
 }
@@ -28,7 +24,7 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	go connectionManager.Start()
+	go ConnectionManager.Start()
 	fmt.Println("webSocket 建立连接:", conn.RemoteAddr().String())
 
 	client := NewClient(conn.RemoteAddr().String(), conn, uint64(time.Now().Unix()))
@@ -37,5 +33,5 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	go client.Write()
 
 	// 触发用户连接事件
-	connectionManager.Register <- client
+	ConnectionManager.Register <- client
 }

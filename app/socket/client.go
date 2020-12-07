@@ -1,6 +1,11 @@
 package socket
 
-import "github.com/gorilla/websocket"
+import (
+	"fmt"
+	"github.com/gogf/gf/frame/g"
+	"github.com/gorilla/websocket"
+	"runtime/debug"
+)
 
 type Client struct {
 	Addr          string          // 客户端地址
@@ -21,10 +26,40 @@ func NewClient(addr string, conn *websocket.Conn, firstTime uint64) *Client {
 	}
 }
 
-func (*Client) Read() {
+func (c *Client) Read() {
+	_, msg, err := c.Socket.ReadMessage()
+	if err != nil {
+		g.Log().Error(err)
+	}
 
+	fmt.Println(msg)
 }
 
-func (*Client) Write() {
+func (c *Client) Write() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("write stop", string(debug.Stack()), r)
 
+		}
+	}()
+
+	defer func() {
+		ConnectionManager.Unregister <- c
+		c.Socket.Close()
+		fmt.Println("Client发送数据 defer", c)
+	}()
+
+	for {
+		select {
+		case message, ok := <-c.SendData:
+			if !ok {
+				// 发送数据错误 关闭连接
+				fmt.Println("Client发送数据 关闭连接", c.Addr, "ok", ok)
+
+				return
+			}
+
+			c.Socket.WriteMessage(websocket.TextMessage, message)
+		}
+	}
 }

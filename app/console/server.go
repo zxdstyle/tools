@@ -3,6 +3,7 @@ package console
 import (
 	"github.com/gogf/gf/frame/g"
 	"github.com/spf13/cobra"
+	"tools/app/socket"
 )
 
 var ServerCmd = &cobra.Command{
@@ -15,4 +16,6 @@ var ServerCmd = &cobra.Command{
 
 func runServer() {
 	g.Server().Run()
+
+	go socket.ConnectionManager.Start()
 }
