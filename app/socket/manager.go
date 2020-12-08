@@ -1,6 +1,9 @@
 package socket
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+)
 
 type Manager struct {
 	Clients     map[*Client]bool   // 全部的连接
@@ -29,9 +32,15 @@ func (m *Manager) Start() {
 		select {
 		case client := <-m.Register:
 			m.EventRegister(client)
-
+			fmt.Println("触发链接事件")
+		case client := <-m.Unregister:
+			m.EventUnRegister(client)
 		}
 	}
+}
+
+func (m *Manager) EventUnRegister(client *Client) {
+	m.DelClients(client)
 }
 
 func (m *Manager) EventRegister(client *Client) {

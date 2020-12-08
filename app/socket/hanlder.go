@@ -25,6 +25,6 @@ func Handler(r *ghttp.Request) {
 	go client.Read()
 	go client.Write()
 
-	// 用户连接事件
+	// 触发用户连接事件
 	ConnectionManager.Register <- client
 }

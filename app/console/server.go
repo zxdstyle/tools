@@ -15,7 +15,7 @@ var ServerCmd = &cobra.Command{
 }
 
 func runServer() {
-	g.Server().Run()
-
 	go socket.ConnectionManager.Start()
+
+	g.Server().Run()
 }

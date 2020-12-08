@@ -27,12 +27,14 @@ func NewClient(addr string, conn *websocket.Conn, firstTime uint64) *Client {
 }
 
 func (c *Client) Read() {
-	_, msg, err := c.Socket.ReadMessage()
-	if err != nil {
-		g.Log().Error(err)
-	}
+	for {
+		_, msg, err := c.Socket.ReadMessage()
+		if err != nil {
+			g.Log().Error(err)
+		}
 
-	fmt.Println(msg)
+		fmt.Println(string(msg))
+	}
 }
 
 func (c *Client) Write() {
@@ -58,6 +60,7 @@ func (c *Client) Write() {
 
 				return
 			}
+			fmt.Println(message)
 
 			c.Socket.WriteMessage(websocket.TextMessage, message)
 		}
