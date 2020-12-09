@@ -2,6 +2,7 @@ package socket
 
 import (
 	"fmt"
+	"github.com/gogf/gf/encoding/gjson"
 	"github.com/gogf/gf/frame/g"
 	"github.com/gorilla/websocket"
 	"runtime/debug"
@@ -33,7 +34,9 @@ func (c *Client) Read() {
 			g.Log().Error(err)
 		}
 
-		fmt.Println(string(msg))
+		fmt.Println("接收到数据：", string(msg))
+
+		ConnectionManager.OnMessage(c, msg)
 	}
 }
 
@@ -41,7 +44,6 @@ func (c *Client) Write() {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("write stop", string(debug.Stack()), r)
-
 		}
 	}()
 
@@ -57,12 +59,23 @@ func (c *Client) Write() {
 			if !ok {
 				// 发送数据错误 关闭连接
 				fmt.Println("Client发送数据 关闭连接", c.Addr, "ok", ok)
-
 				return
 			}
-			fmt.Println(message)
+
+			fmt.Println("发送数据：", string(message))
 
 			c.Socket.WriteMessage(websocket.TextMessage, message)
 		}
+	}
+}
+
+func handleMessage(c *Client, msg []byte) {
+	var message Message
+	if err := gjson.DecodeTo(msg, message); err != nil {
+		error := &FailedMessage{
+			Code:  BadRequest,
+			Error: "消息格式错误",
+		}
+		ConnectionManager.SendMessage(c, error)
 	}
 }

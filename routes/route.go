@@ -9,6 +9,9 @@ import (
 )
 
 func init() {
+	// websocket路由
+	initWebSocketRoute()
+
 	app := g.Server()
 
 	app.BindHandler("/ws", socket.Handler)

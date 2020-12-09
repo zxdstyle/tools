@@ -1,12 +1,13 @@
 package socket
 
 import (
-	"fmt"
+	"github.com/gogf/gf/encoding/gjson"
+	"github.com/gogf/gf/frame/g"
 	"sync"
 )
 
 type Manager struct {
-	Clients     map[*Client]bool   // 全部的连接
+	Clients     map[string]*Client // 全部的连接
 	ClientsLock sync.RWMutex       // 读写锁
 	Users       map[string]*Client // 登录的用户 // appId+uuid
 	UserLock    sync.RWMutex       // 读写锁
@@ -18,7 +19,7 @@ type Manager struct {
 
 func NewConnectionManager() *Manager {
 	return &Manager{
-		Clients:  make(map[*Client]bool),
+		Clients:  make(map[string]*Client),
 		Users:    make(map[string]*Client),
 		Register: make(chan *Client, 1000),
 		//Login:      make(chan *login, 1000),
@@ -31,22 +32,11 @@ func (m *Manager) Start() {
 	for {
 		select {
 		case client := <-m.Register:
-			m.EventRegister(client)
-			fmt.Println("触发链接事件")
+			m.OnOpen(client)
 		case client := <-m.Unregister:
-			m.EventUnRegister(client)
+			m.OnClose(client)
 		}
 	}
-}
-
-func (m *Manager) EventUnRegister(client *Client) {
-	m.DelClients(client)
-}
-
-func (m *Manager) EventRegister(client *Client) {
-	m.AddClients(client)
-
-	client.SendData <- []byte("连接成功")
 }
 
 // 添加客户端
@@ -54,7 +44,7 @@ func (m *Manager) AddClients(client *Client) {
 	m.ClientsLock.Lock()
 	defer m.ClientsLock.Unlock()
 
-	m.Clients[client] = true
+	m.Clients[client.UserId] = client
 }
 
 // 删除客户端
@@ -62,7 +52,17 @@ func (m *Manager) DelClients(client *Client) {
 	m.ClientsLock.Lock()
 	defer m.ClientsLock.Unlock()
 
-	if _, ok := m.Clients[client]; ok {
-		delete(m.Clients, client)
+	if _, ok := m.Clients[client.UserId]; ok {
+		delete(m.Clients, client.UserId)
 	}
+}
+
+// 向客户端发送消息
+func (m *Manager) SendMessage(client *Client, message interface{}) {
+	msg, err := gjson.Encode(message)
+	if err != nil {
+		g.Log().Error(err)
+	}
+
+	client.SendData <- msg
 }

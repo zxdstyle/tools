@@ -19,6 +19,7 @@ func Handler(r *ghttp.Request) {
 
 	address := connection.Conn.RemoteAddr().String()
 	fmt.Println("webSocket 建立连接:", address)
+
 	currentTime := uint64(time.Now().Unix())
 	client := NewClient(address, connection.Conn, currentTime)
 

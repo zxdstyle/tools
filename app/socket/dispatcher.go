@@ -1,65 +1,41 @@
 package socket
 
-import (
-	"github.com/gogf/gf/encoding/gjson"
-	"github.com/gogf/gf/frame/g"
-	"github.com/gogf/gf/net/ghttp"
-	"github.com/gogf/gf/util/gvalid"
-)
+import "sync"
 
 type FailedMessage struct {
-	Type  string `json:"type" v:"type@required#消息类型不能为空"`
-	Error string `json:"data" v:""`
+	Code  int    `json:"code"`
+	Error string `json:"error"`
 }
 
 type Message struct {
-	Type string `json:"type" v:"type@required#消息类型不能为空"`
-	From string `json:"name" v:""`
-	To   string `json:"to"`
+	Type    string `json:"type" v:"type@required#消息类型不能为空"`
+	From    string `json:"name" v:""`
+	Message string `json:"message"`
 }
 
-// 分发 websocket 请求
-func (h *WebSocketHandler) dispatch() {
-	_, msg, err := h.ws.ReadMessage()
-	if err != nil {
-		g.Log().Error(err)
-	}
+type HandlerFunc func(client *Client, message *Message)
 
-	_ = h.parseMessage(msg)
+var (
+	handlers        = make(map[string]HandlerFunc)
+	handlersRWMutex sync.RWMutex
+)
+
+// 注册websocket消息处理器
+func Register(key string, handler HandlerFunc) {
+	handlersRWMutex.Lock()
+	defer handlersRWMutex.Unlock()
+
+	handlers[key] = handler
+
+	return
 }
 
-func (h *WebSocketHandler) parseMessage(msg []byte) (message *Message) {
-	if err := gjson.DecodeTo(msg, message); err != nil {
-		h.writeFailed(err.Error())
-		return nil
-	}
-	if e := gvalid.CheckStruct(message, nil); e != nil {
-		h.writeFailed(e.FirstString())
-		return
-	}
-	return message
-}
+// 获取对应的处理器
+func getHandler(key string) (handler HandlerFunc, ok bool) {
+	handlersRWMutex.Lock()
+	defer handlersRWMutex.Unlock()
 
-func (h *WebSocketHandler) writeFailed(errMsg string) error {
+	handler, ok = handlers[key]
 
-	msg := FailedMessage{
-		Type:  "system",
-		Error: errMsg,
-	}
-
-	b, err := gjson.Encode(msg)
-	if err != nil {
-		return err
-	}
-
-	return h.ws.WriteMessage(ghttp.WS_MSG_TEXT, b)
-}
-
-func (h *WebSocketHandler) write(msg Message) error {
-	b, err := gjson.Encode(msg)
-	if err != nil {
-		return err
-	}
-
-	return h.ws.WriteMessage(ghttp.WS_MSG_TEXT, b)
+	return
 }
